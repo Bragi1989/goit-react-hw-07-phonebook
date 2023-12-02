@@ -7,22 +7,20 @@ import { fetchContacts } from './redux/contactsOperations';
 
 const App = () => {
   const dispatch = useDispatch();
-  const contacts = useSelector((state) => state.contacts.items);
+  const contacts = useSelector((state) => state.contacts?.items || []);
   const filter = useSelector((state) => state.contacts?.filter || '');
-  const isLoading = useSelector((state) => state.contacts.isLoading);
-  const error = useSelector((state) => state.contacts.error);
+  const isLoading = useSelector((state) => state.contacts?.isLoading || false);
+  const error = useSelector((state) => state.contacts?.error || null);
 
   useEffect(() => {
     dispatch(fetchContacts());
   }, [dispatch]);
 
-
   const filteredContacts = useMemo(() => {
-    return contacts
-      ? contacts.filter((contact) =>
-          contact.name && contact.name.toLowerCase().includes(filter.toLowerCase())
-        )
-      : [];
+    return contacts.filter(
+      (contact) =>
+        contact.name && contact.name.toLowerCase().includes(filter.toLowerCase())
+    );
   }, [contacts, filter]);
 
   return (
