@@ -6,9 +6,9 @@ const Filter = () => {
   const dispatch = useDispatch();
   const filter = useSelector((state) => state.contacts.filter);
 
-const handleChangeFilter = (e) => {
-  dispatch(updateFilterAction(e.target.value));
-};
+  const handleChangeFilter = (e) => {
+    dispatch(updateFilterAction(e.target.value));
+  };
 
   return (
     <label key="filter-label">

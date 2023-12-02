@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { addContactAction } from './redux/contactsSlice';
+import { addContact } from './redux/contactsSlice';
 import css from './ContactForm.module.css';
 
 const ContactForm = () => {
@@ -13,13 +13,13 @@ const ContactForm = () => {
     name === 'name' ? setName(value) : setNumber(value);
   };
 
-const handleSubmit = (e) => {
-  e.preventDefault();
+  const handleSubmit = (e) => {
+    e.preventDefault();
 
-  dispatch(addContactAction({ id: Date.now(), name: name.toLowerCase(), number }));
-  setName('');
-  setNumber('');
-};
+    dispatch(addContact({ id: Date.now(), name: name.toLowerCase(), number }));
+    setName('');
+    setNumber('');
+  };
 
   return (
     <form className={css.contactForm} onSubmit={handleSubmit}>
@@ -34,4 +34,4 @@ const handleSubmit = (e) => {
   );
 };
 
-export default ContactForm;
+export default ContactForm;       

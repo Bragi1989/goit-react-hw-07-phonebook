@@ -1,27 +1,30 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import ContactForm from './ContactForm';
 import ContactList from './ContactList';
 import Filter from './Filter';
-import { fetchContacts } from './redux/contactsOperations';
+import { addContact } from './redux/contactsSlice';
 
 const App = () => {
   const dispatch = useDispatch();
-  const contacts = useSelector((state) => state.contacts?.items || []);
+  const contacts = useSelector((state) => state.contacts.items);
   const filter = useSelector((state) => state.contacts?.filter || '');
-  const isLoading = useSelector((state) => state.contacts?.isLoading || false);
-  const error = useSelector((state) => state.contacts?.error || null);
+
+useEffect(() => {
+  const savedContacts = localStorage.getItem('contacts');
+
+  if (savedContacts) {
+    dispatch(addContact(JSON.parse(savedContacts)));
+  }
+}, [dispatch]);
 
   useEffect(() => {
-    dispatch(fetchContacts());
-  }, [dispatch]);
+  localStorage.setItem('contacts', JSON.stringify(contacts));
+}, [contacts]);
 
-  const filteredContacts = useMemo(() => {
-    return contacts.filter(
-      (contact) =>
-        contact.name && contact.name.toLowerCase().includes(filter.toLowerCase())
-    );
-  }, [contacts, filter]);
+  const filteredContacts = contacts.filter((contact) =>
+    contact.name.toLowerCase().includes(filter.toLowerCase())
+  );
 
   return (
     <div>
@@ -29,18 +32,13 @@ const App = () => {
       <ContactForm />
       <h2>Contacts</h2>
       <Filter />
-      {isLoading ? (
-        <p>Loading...</p>
-      ) : error ? (
-        <p>Error: {error}</p>
-      ) : (
-        <ContactList contacts={filteredContacts} />
-      )}
+      <ContactList contacts={filteredContacts} />
     </div>
   );
 };
 
 export default App;
+
 
 
 

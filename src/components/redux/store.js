@@ -1,5 +1,5 @@
 import { configureStore, getDefaultMiddleware } from '@reduxjs/toolkit';
-import contactsReducer from './contactsSlice';
+import contactsReducer, { fetchContacts } from './contactsSlice';
 import { persistStore, persistReducer } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 
@@ -24,4 +24,6 @@ const store = configureStore({
 
 const persistor = persistStore(store);
 
-export { store, persistor }; 
+store.dispatch(fetchContacts());
+
+export { store, persistor };
