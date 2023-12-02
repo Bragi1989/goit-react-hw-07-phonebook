@@ -1,41 +1,32 @@
 import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { addContact } from './redux/contactsSlice';
 import css from './ContactForm.module.css';
 
-const ContactForm = ({ handleSubmit }) => {
-  const [formData, setFormData] = useState({
-    name: '',
-    number: '',
-  });
+const ContactForm = () => {
+  const dispatch = useDispatch();
+  const [name, setName] = useState('');
+  const [number, setNumber] = useState('');
 
   const handleChange = (e) => {
-    setFormData((prevData) => ({
-      ...prevData,
-      name: e.target.value,
-    }));
+    const { name, value } = e.target;
+    name === 'name' ? setName(value) : setNumber(value);
   };
 
-  const handleChangeNumber = (e) => {
-    setFormData((prevData) => ({
-      ...prevData,
-      number: e.target.value,
-    }));
-  };
-
-  const onSubmit = (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    const { name, number } = formData;
-    handleSubmit(name, number);
-    setFormData({ name: '', number: '' });
-  };
 
-  const { name, number } = formData;
+    dispatch(addContact({ id: Date.now(), name: name.toLowerCase(), number }));
+    setName('');
+    setNumber('');
+  };
 
   return (
-    <form className={css.contactForm} onSubmit={onSubmit}>
+    <form className={css.contactForm} onSubmit={handleSubmit}>
       <p className={css.contactName}>Name</p>
       <input type="text" name="name" value={name} onChange={handleChange} required />
       <p className={css.contactName}>Number</p>
-      <input type="tel" name="number" value={number} onChange={handleChangeNumber} required />
+      <input type="tel" name="number" value={number} onChange={handleChange} required />
       <button className={css.contactButton} type="submit">
         Add Contact
       </button>
