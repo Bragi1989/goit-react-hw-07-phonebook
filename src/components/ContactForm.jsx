@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { addContact } from './redux/contactsSlice';
+import { v4 as uuidv4 } from 'uuid'; 
 import css from './ContactForm.module.css';
 
 const ContactForm = () => {
@@ -16,7 +17,13 @@ const ContactForm = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    dispatch(addContact({ id: Date.now(), name: name.toLowerCase(), number }));
+    
+    const id = uuidv4();
+
+   
+    dispatch(addContact({ id, name: name.toLowerCase(), number }));
+
+   
     setName('');
     setNumber('');
   };
@@ -34,4 +41,4 @@ const ContactForm = () => {
   );
 };
 
-export default ContactForm;       
+export default ContactForm;     
