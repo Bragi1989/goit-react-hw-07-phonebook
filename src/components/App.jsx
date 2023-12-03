@@ -4,6 +4,8 @@ import { fetchContacts } from './redux/contactsSlice';
 import ContactForm from './ContactForm';
 import ContactList from './ContactList';
 import Filter from './Filter';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const App = () => {
   const dispatch = useDispatch();

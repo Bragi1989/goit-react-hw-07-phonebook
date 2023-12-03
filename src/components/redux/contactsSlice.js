@@ -28,6 +28,8 @@ export const updateFilter = createSlice({
   },
 });
 
+export const selectContacts = (state) => state.contacts.items;
+
 export const { updateFilter: updateFilterAction } = updateFilter.actions;
 
 const contactsSlice = createSlice({
