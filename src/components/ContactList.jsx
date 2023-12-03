@@ -11,7 +11,7 @@ const ContactList = ({ contacts }) => {
 
   return (
     <div>
-      <ul key="contact-list">
+      <ul>
         {contacts.map((contact) => (
           <li key={contact.id}>
             {contact.name}: {contact.number}
@@ -23,4 +23,4 @@ const ContactList = ({ contacts }) => {
   );
 };
 
-export default ContactList;  
+export default ContactList;
