@@ -1,0 +1,11 @@
+.contactlistForm {
+    list-style-type: none;
+    padding: 0;
+    
+}
+
+.contactlistName {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+}

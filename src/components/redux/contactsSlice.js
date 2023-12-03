@@ -1,5 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const baseUrl = 'https://656bc56ae1e03bfd572dd2a0.mockapi.io/goit-react-hw-07-phonebook';
 
@@ -9,8 +11,12 @@ export const fetchContacts = createAsyncThunk('contacts/fetchAll', async () => {
 });
 
 export const addContact = createAsyncThunk('contacts/addContact', async (contact) => {
-  const response = await axios.post(`${baseUrl}/contacts`, contact);
-  return response.data;
+  try {
+    const response = await axios.post(`${baseUrl}/contacts`, contact);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
 });
 
 export const deleteContact = createAsyncThunk('contacts/deleteContact', async (contactId) => {
@@ -18,49 +24,12 @@ export const deleteContact = createAsyncThunk('contacts/deleteContact', async (c
   return contactId;
 });
 
-export const updateFilter = createSlice({
+const contactsSlice = createSlice({
   name: 'contacts',
-  initialState: { filter: '' },
+  initialState: { items: [], isLoading: false, error: null, filter: '' },
   reducers: {
     updateFilter: (state, action) => {
       state.filter = action.payload;
-    },
-  },
-});
-
-export const selectContacts = (state) => state.contacts.items;
-
-export const { updateFilter: updateFilterAction } = updateFilter.actions;
-
-const contactsSlice = createSlice({
-  name: 'contacts',
-  initialState: { items: [], isLoading: false, error: null },
-  reducers: {
-    addContact: (state, action) => {
-      if (Array.isArray(action.payload)) {
-        const newContacts = action.payload.filter((newContact) => {
-          const existingContactIndex = state.items.findIndex(
-            (contact) => contact.name.toLowerCase() === newContact.name.toLowerCase()
-          );
-          return existingContactIndex === -1;
-        });
-
-        state.items.push(...newContacts);
-      } else {
-        const { id, name, number } = action.payload;
-
-        if (name && number) {
-          const existingContactIndex = state.items.findIndex(
-            (contact) => contact.name.toLowerCase() === name.toLowerCase()
-          );
-
-          if (existingContactIndex === -1) {
-            state.items.push({ id, name, number });
-          } else {
-            alert('Contact is not unique!');
-          }
-        }
-      }
     },
   },
   extraReducers: (builder) => {
@@ -69,15 +38,35 @@ const contactsSlice = createSlice({
         state.isLoading = true;
       })
       .addCase(fetchContacts.fulfilled, (state, action) => {
+        state.items = action.payload.map((contact) => ({
+          id: contact.id,
+          name: contact.name,
+          number: contact.number || '',
+        }));
         state.isLoading = false;
-        state.items = action.payload;
       })
       .addCase(fetchContacts.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.error.message;
       })
       .addCase(addContact.fulfilled, (state, action) => {
-        state.items.push(action.payload);
+        const newContact = action.payload;
+        const isContactUnique = !state.items.some(
+          (existingContact) => existingContact.name.toLowerCase() === newContact.name.toLowerCase()
+        );
+
+        if (isContactUnique) {
+          state.items.push(newContact);
+        } else {
+          toast.error('Контакт не уникальный!', {
+            position: 'top-right',
+            autoClose: 3000,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: false,
+            draggable: true,
+          });
+        }
       })
       .addCase(deleteContact.fulfilled, (state, action) => {
         state.items = state.items.filter((contact) => contact.id !== action.payload);
@@ -85,5 +74,13 @@ const contactsSlice = createSlice({
   },
 });
 
-export const { addContact: addContactAction, deleteContact: deleteContactAction, fetchContacts: fetchContactsAction } = contactsSlice.actions;
+export const { updateFilter: updateFilterAction } = contactsSlice.actions;
+export const selectContacts = (state) => {
+  const filter = state.contacts.filter.toLowerCase();
+  return state.contacts.items.filter(
+    (contact) => contact.name.toLowerCase().includes(filter) || contact.number.includes(filter)
+  );
+};
+export const selectFilter = (state) => state.contacts.filter;
+
 export default contactsSlice.reducer;
